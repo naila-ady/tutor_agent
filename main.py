@@ -38,10 +38,10 @@ python_tutor_agent =Agent(
 
 triage_agent = Agent(
     name="Triage Agent",
-    instructions="You determine which agent to use based on the user's homework question and always give summarized answer",
+    instructions="You determine which agent to use based on the user's homework question and always give short and summarized answers",
     handoffs=[python_tutor_agent, math_tutor_agent]
 )
 
-result = Runner.run_sync(triage_agent," ",run_config=run_config)
+result = Runner.run_sync(triage_agent,"what is pydantic ",run_config=run_config)
 print(result.final_output)
 
