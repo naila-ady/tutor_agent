@@ -1,8 +1,14 @@
 import os
-from agents import Agent
-from agents import OpenAIChatCompletionsModel,AsyncOpenAI,Runner
 from agents.run import RunConfig
+from agents import( 
+Agent, OpenAIChatCompletionsModel,AsyncOpenAI,Runner,
+output_guardrail, GuardrailFunctionOutput,OutputGuardrailTripwireTriggered,
+input_guardrail,InputGuardrailTripwireTriggered)
 from dotenv import load_dotenv,find_dotenv 
+from pydantic import BaseModel
+import asyncio
+
+
 
 load_dotenv(find_dotenv())
 
@@ -41,7 +47,20 @@ triage_agent = Agent(
     instructions="You determine which agent to use based on the user's homework question and always give short and summarized answers",
     handoffs=[python_tutor_agent, math_tutor_agent]
 )
+class MathHomeWorkOutput(BaseModel):
+    is_Math_work : bool
+    reasoning : str
+    
+guardrail_agent= Agent(
+    name ="Guardrail Agent",
+    instructions="Check if the  user is asking to do Math homework",
+    output_type=MathHomeWorkOutput,
+    model= model
+    )
 
-result = Runner.run_sync(triage_agent,"what is pydantic ",run_config=run_config)
-print(result.final_output)
+    
+output = Runner.run_sync(guardrail_agent,"what is the capital of Pakistan?",run_config=run_config)
+print(type(guardrail_agent.output_type))
+
+print(output.final_output)
 
